@@ -550,56 +550,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Database migration routes (admin only)
-  app.post("/api/admin/migration/test-connection", requireAdmin, async (req, res) => {
+  app.get("/api/admin/migration/export-sql", requireAdmin, async (req, res) => {
     try {
-      const { supabaseUrl } = req.body;
-      
-      if (!supabaseUrl) {
-        res.status(400).json({ error: "Supabase URL is required" });
-        return;
-      }
-
       const { MigrationService } = await import("./migration-service");
       const migrationService = new MigrationService();
-      const result = await migrationService.testConnection(supabaseUrl);
+      const sqlContent = await migrationService.exportToSQL();
       
-      res.json(result);
+      res.setHeader('Content-Type', 'application/sql');
+      res.setHeader('Content-Disposition', 'attachment; filename="supabase_migration.sql"');
+      res.send(sqlContent);
     } catch (error) {
-      console.error("Connection test error:", error);
+      console.error("Export error:", error);
       res.status(500).json({ 
-        success: false, 
-        error: error instanceof Error ? error.message : "Connection test failed" 
+        error: error instanceof Error ? error.message : "Export failed" 
       });
     }
   });
 
-  app.post("/api/admin/migration/execute", requireAdmin, async (req, res) => {
+  app.get("/api/admin/migration/stats", requireAdmin, async (req, res) => {
     try {
-      const { supabaseUrl } = req.body;
-      
-      if (!supabaseUrl) {
-        res.status(400).json({ error: "Supabase URL is required" });
-        return;
-      }
-
-      console.log("[Migration] Starting migration to Supabase...");
-      
       const { MigrationService } = await import("./migration-service");
       const migrationService = new MigrationService();
-      const result = await migrationService.migrate(supabaseUrl);
+      const stats = await migrationService.getStats();
       
-      if (result.success) {
-        console.log(`[Migration] Complete! ${result.totalRecords} records migrated`);
-      } else {
-        console.error("[Migration] Failed:", result.error);
-      }
-      
-      res.json(result);
+      res.json(stats);
     } catch (error) {
-      console.error("Migration error:", error);
+      console.error("Stats error:", error);
       res.status(500).json({ 
-        success: false, 
-        error: error instanceof Error ? error.message : "Migration failed" 
+        error: error instanceof Error ? error.message : "Failed to get stats" 
       });
     }
   });
