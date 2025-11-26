@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Filter, X, Search } from "lucide-react";
 import type { BettingHouse } from "@shared/schema";
@@ -30,10 +36,15 @@ export function BetFilters({ onFiltersChange, className }: BetFiltersProps) {
   });
 
   // Extract unique houses from data
-  const uniqueHouseNames = Array.from(new Set(bettingHouses.map(house => house.name)));
+  const uniqueHouseNames = Array.from(
+    new Set(bettingHouses.map((house) => house.name)),
+  );
 
   const handleTempFilterChange = (key: keyof FilterValues, value: any) => {
-    setTempFilters({ ...tempFilters, [key]: value === 'all' ? undefined : value });
+    setTempFilters({
+      ...tempFilters,
+      [key]: value === "all" ? undefined : value,
+    });
   };
 
   const handleDateRangeChange = (dateRange: DateRange | undefined) => {
@@ -51,10 +62,10 @@ export function BetFilters({ onFiltersChange, className }: BetFiltersProps) {
     onFiltersChange({});
   };
 
-  const hasActiveFilters = Object.values(filters).some(value => {
+  const hasActiveFilters = Object.values(filters).some((value) => {
     if (value === undefined || value === "" || value === null) return false;
-    if (typeof value === 'object' && value !== null) {
-      return Object.values(value).some(v => v !== undefined);
+    if (typeof value === "object" && value !== null) {
+      return Object.values(value).some((v) => v !== undefined);
     }
     return true;
   });
@@ -69,9 +80,9 @@ export function BetFilters({ onFiltersChange, className }: BetFiltersProps) {
           </CardTitle>
           <div className="flex items-center gap-2">
             {hasActiveFilters && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={clearFilters}
                 data-testid="button-clear-filters"
               >
@@ -87,11 +98,16 @@ export function BetFilters({ onFiltersChange, className }: BetFiltersProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="status-filter">Status</Label>
-            <Select 
-              value={tempFilters.status || ""} 
-              onValueChange={(value) => handleTempFilterChange("status", value || undefined)}
+            <Select
+              value={tempFilters.status || ""}
+              onValueChange={(value) =>
+                handleTempFilterChange("status", value || undefined)
+              }
             >
-              <SelectTrigger id="status-filter" data-testid="select-status-filter">
+              <SelectTrigger
+                id="status-filter"
+                data-testid="select-status-filter"
+              >
                 <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
@@ -105,11 +121,16 @@ export function BetFilters({ onFiltersChange, className }: BetFiltersProps) {
 
           <div className="space-y-2">
             <Label htmlFor="house-filter">Casa de Apostas</Label>
-            <Select 
-              value={tempFilters.house || ""} 
-              onValueChange={(value) => handleTempFilterChange("house", value || undefined)}
+            <Select
+              value={tempFilters.house || ""}
+              onValueChange={(value) =>
+                handleTempFilterChange("house", value || undefined)
+              }
             >
-              <SelectTrigger id="house-filter" data-testid="select-house-filter">
+              <SelectTrigger
+                id="house-filter"
+                data-testid="select-house-filter"
+              >
                 <SelectValue placeholder="Todas as casas" />
               </SelectTrigger>
               <SelectContent>
